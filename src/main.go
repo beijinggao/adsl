@@ -4,6 +4,7 @@ import (
 	"adsl"
 	//"fmt"
 	//"regexp"
+	//"stack"
 )
 
 func main() {
@@ -23,5 +24,8 @@ func main() {
 	//p := m["key1"]
 	//fmt.Println(p)
 
-	adsl.Readfile()
+	//adsl.Readfile()
+	
+	//stack.Test()
+	adsl.Pass()
 }

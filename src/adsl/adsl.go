@@ -8,7 +8,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"stack"
+	"container/heap"
 )
+
+var items =make(map[string]int) 
 
 func executeCmd(cmd string) string {
 	output, err := exec.Command("cmd.exe", "/c", cmd).Output()
@@ -53,8 +57,11 @@ func Readfile() {
 	defer fl.Close()
 	buf := bufio.NewReader(fl)
 	line, _, err := buf.ReadLine()
-	for ; err == nil; line, _, err = buf.ReadLine() {
-		fmt.Println(string(line))
+	
+	for i:=0; err == nil; line, _, err = buf.ReadLine() {
+		//fmt.Println(string(line))
+		initItem(string(line),i)
+		i++
 	}
 	if err == io.EOF {
 		fmt.Print(string(line))
@@ -78,3 +85,42 @@ func main1() {
 	connAdsl("宽带", "hzhz**********", "******")
 	cutAdsl("宽带")
 }
+
+func Cmd() {
+	cmd := exec.Command("cmd.exe", "/c", "mkdird bbb")
+	err := cmd.Run()
+	if err == nil {
+		fmt.Println("成功")
+	}else {
+		fmt.Println("什么垃圾玩意")
+	}
+}
+
+func initItem(line string,i int){
+	items[line]=i
+}
+
+func Pass(){
+	Readfile()
+	pq:=make(stack.PriorityQueue,len(items))
+	i:=0
+	for key,priority:=range items{
+		pq[i]=&stack.Item{
+			Value: key,
+			Priority:priority,
+			Index: i,
+		}
+		i++
+	}
+	heap.Init(&pq)
+	
+	for key,_:=range items{
+		for pq.Len()>0{
+			item:=heap.Pop(&pq).(*stack.Item)
+			fmt.Printf("%s\t%.2d:%s\n",key,item.Priority,item.Value)
+		}
+	}
+	
+}
+
+
