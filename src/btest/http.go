@@ -1,5 +1,5 @@
 // http project http.go
-package src
+package btest
 
 import (
 	"fmt"
