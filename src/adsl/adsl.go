@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"runtime"
 	//"stack"
 	//"container/heap"
 )
@@ -121,18 +122,56 @@ func Pass(){
 	}
 	heap.Init(&pq)
 	*/
-	
+	runtime.GOMAXPROCS(2)
+	exits := make([]chan bool,len(items)*len(items))
+	i:=0
 	for key,_:=range items{
 		/*for pq.Len()>0{
 			item:=heap.Pop(&pq).(*stack.Item)
 			fmt.Printf("%s\t%.2d:%s\n",key,item.Priority,item.Value)
 		}*/
 		for passwd,_:=range items{
-			connAdsl("宽带连接","bhgy1408"+key,passwd)
+			
+			//go connAdsl("宽带连接","bhgy1408"+key,passwd)
+			//go testgoroutine()
+			//fmt.Println(key,passwd)
+			//goroutine()
+			ec := exits[i]
+			go func(e chan bool) {
+				connAdsl("宽带连接","bhgy1408"+key,passwd)
+				e <- true
+			}(ec)
+			i++
+			
 		}
 		
 	}
 	
+	
+}
+
+func goroutine(){
+	num := 100
+	exits := make([]chan bool, num)
+	for i := 0; i < num; i++ {
+		exits[i] = make(chan bool, 1)
+		ec := exits[i]
+		j := i
+		go func(e chan bool) {
+			fmt.Println("go routine", j)
+			e <- true
+		}(ec)
+	}
+
+	for i := 0; i < num; i++ {
+		<-exits[i]
+	}
+
+}
+var i=0
+func testgoroutine(){
+	fmt.Println(i)
+	i++
 }
 
 
